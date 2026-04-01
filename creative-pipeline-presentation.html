@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creative Iteration Pipeline — Hipto</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0f0f1a;
+    --card: #1a1a2e;
+    --card2: #16213e;
+    --accent: #e94560;
+    --accent2: #0f3460;
+    --green: #00d2a0;
+    --orange: #f39c12;
+    --purple: #a855f7;
+    --blue: #3b82f6;
+    --yellow: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #334155;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; line-height: 1.6; }
+  
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(15,15,26,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 12px 40px; display: flex; align-items: center; gap: 32px; }
+  nav .logo { font-weight: 800; font-size: 18px; color: var(--accent); }
+  nav a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+  nav a:hover, nav a.active { color: var(--text); }
+
+  /* SECTIONS */
+  section { padding: 80px 60px 60px; max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: 48px; font-weight: 800; margin-bottom: 8px; }
+  h1 span { color: var(--accent); }
+  h2 { font-size: 32px; font-weight: 700; margin-bottom: 32px; }
+  h2 .tag { font-size: 14px; background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; vertical-align: middle; margin-left: 12px; font-weight: 600; }
+  h3 { font-size: 20px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+  .subtitle { font-size: 20px; color: var(--muted); margin-bottom: 48px; max-width: 700px; }
+  
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 40px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: transform 0.2s, border-color 0.2s; }
+  .card:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .card-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 24px; }
+  .card ul { list-style: none; }
+  .card li { padding: 6px 0; padding-left: 20px; position: relative; color: var(--muted); font-size: 14px; }
+  .card li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+
+  /* DB CARDS */
+  .db-stable { border-left: 4px solid var(--green); }
+  .db-evolve { border-left: 4px solid var(--orange); }
+  .db-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge-stable { background: rgba(0,210,160,0.15); color: var(--green); }
+  .badge-evolve { background: rgba(243,156,18,0.15); color: var(--orange); }
+  .badge-asterisk { background: rgba(243,156,18,0.15); color: var(--yellow); font-size: 12px; padding: 2px 8px; border-radius: 8px; }
+
+  /* SOURCE TAG */
+  .source { display: inline-block; font-size: 11px; background: var(--accent2); color: var(--blue); padding: 2px 8px; border-radius: 6px; margin-top: 8px; }
+
+  /* FLOW */
+  .flow { display: flex; flex-direction: column; gap: 0; align-items: center; margin: 40px 0; }
+  .flow-step { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 36px; width: 100%; max-width: 800px; text-align: center; position: relative; }
+  .flow-step .step-num { position: absolute; top: -14px; left: 24px; background: var(--accent); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .flow-arrow { font-size: 28px; color: var(--border); margin: -4px 0; }
+  .flow-split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 800px; }
+  .flow-split .flow-step { width: 100%; }
+
+  /* MODE CARDS */
+  .mode-card { padding: 32px; border-radius: 16px; border: 2px solid; }
+  .mode-stable { border-color: var(--green); background: rgba(0,210,160,0.05); }
+  .mode-balanced { border-color: var(--blue); background: rgba(59,130,246,0.05); }
+  .mode-disruptive { border-color: var(--accent); background: rgba(233,69,96,0.05); }
+  .mode-card h3 { margin-bottom: 8px; }
+  .mode-card .mode-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 12px; }
+  .mode-stable .mode-label { color: var(--green); }
+  .mode-balanced .mode-label { color: var(--blue); }
+  .mode-disruptive .mode-label { color: var(--accent); }
+  .mode-card p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .mode-example { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--text); font-family: monospace; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+  th { text-align: left; padding: 12px 16px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* TECH STACK */
+  .tech-row { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--card); border-radius: 10px; margin-bottom: 8px; }
+  .tech-role { font-size: 12px; color: var(--muted); min-width: 180px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tech-name { font-weight: 700; color: var(--text); }
+  .tech-detail { color: var(--muted); font-size: 13px; margin-left: auto; }
+  .tech-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* SEPARATOR */
+  .sep { height: 1px; background: var(--border); margin: 60px 0; }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+
+  /* HERO STATS */
+  .stats { display: flex; gap: 40px; margin: 32px 0 48px; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 36px; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 13px; color: var(--muted); }
+
+  /* SCROLL ANIM */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+  .fade-in.visible, .fade-in.force-visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    section { padding: 80px 20px 40px; }
+    .grid-2, .grid-3, .flow-split { grid-template-columns: 1fr; }
+    h1 { font-size: 32px; }
+    nav { padding: 12px 20px; gap: 16px; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">HIPTO AI</div>
+  <a href="#hero">Accueil</a>
+  <a href="#databases">Bases de données</a>
+  <a href="#flux1">Flux ① Bouton</a>
+  <a href="#flux2">Flux ② Upload</a>
+  <a href="#modes">Modes créativité</a>
+  <a href="#stack">Stack technique</a>
+</nav>
+
+<!-- ═══════════════════════ HERO ═══════════════════════ -->
+<section id="hero">
+  <div class="fade-in">
+    <h1>Creative <span>Iteration</span> Pipeline</h1>
+    <p class="subtitle">Générer des créas publicitaires publication-ready à partir de l'intelligence compétitive, des règles métier et de l'IA générative.</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Providers IA</div></div>
+      <div class="stat"><div class="stat-num">5</div><div class="stat-label">Tables pipeline</div></div>
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label">Flux utilisateur</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Modes créativité</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ DATABASES ═══════════════════════ -->
+<section id="databases">
+  <div class="fade-in">
+    <h2>Architecture des données</h2>
+    <p class="subtitle">Séparation claire entre les bases qui ne changent pas (règles métier) et celles qui évoluent avec le marché.</p>
+  </div>
+
+  <h3 class="fade-in"><span class="db-badge badge-stable">STABLE</span> &nbsp; Bases de règles fixes</h3>
+  <div class="grid-3 fade-in">
+    <div class="card db-stable">
+      <div class="card-title"><span class="icon">📘</span> Andromeda Meta</div>
+      <ul>
+        <li>Diversité créative : 4 concepts min/campagne</li>
+        <li>Anti-fatigue : rotation fréquente</li>
+        <li>Texte max 20% de la surface image</li>
+        <li>Produit visible en &lt;1 seconde</li>
+        <li>CTA détaché, safe zones stories</li>
+        <li>Hook dans les 3 premiers mots</li>
+      </ul>
+      <div class="source">Source : PDF Andromeda 45 pages (Meta)</div>
+    </div>
+    <div class="card db-stable">
+      <div class="card-title"><span class="icon">⚖️</span> Juridique & Conformité</div>
+      <ul>
+        <li>Chiffres → astérisque "sous conditions"</li>
+        <li>Économies → "jusqu'à", forfaits → "à partir de"</li>
+        <li>Superlatifs interdits si non vérifiables</li>
+        <li>Comparaisons OK si pas de supériorité chiffrée</li>
+        <li>Logos tiers : égalité de traitement</li>
+        <li>Interdits : aides d'État, symboles officiels</li>
+      </ul>
+      <div class="source">Filtre appliqué en bout de funnel (validation post-génération)</div>
+    </div>
+    <div class="card db-stable">
+      <div class="card-title"><span class="icon">🎨</span> Hipto Guidelines</div>
+      <ul>
+        <li>Playbook créatif interne</li>
+        <li>Design & identité visuelle par vertical</li>
+        <li>Ton : direct, confiant, pas agressif</li>
+        <li>Pas de comparaison directe nommée</li>
+        <li>CTA spécifique au tunnel</li>
+        <li>Max 1 point d'exclamation par créa</li>
+      </ul>
+      <div class="source">Source : Équipe créa Hipto</div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <h3 class="fade-in"><span class="db-badge badge-evolve">ÉVOLUTIVE</span> &nbsp; Bases qui changent avec le marché</h3>
+  <div class="grid-2 fade-in">
+    <div class="card db-evolve">
+      <div class="card-title"><span class="icon">🔍</span> Transcription Visuels</div>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:10px; font-style:italic;">Objectif : Identifier les best practices visuelles</p>
+      <ul>
+        <li>Layout, couleurs, sujet, style</li>
+        <li>Comprendre pourquoi une créa marche</li>
+        <li>Prompt de reconstruction designer</li>
+      </ul>
+      <div class="source">Source : Hipto Radar — Winners + Scaling uniquement</div>
+    </div>
+    <div class="card db-evolve">
+      <div class="card-title"><span class="icon">✍️</span> Analyse marché interne vs externe</div>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:10px; font-style:italic;">Objectif : Identifier le manque créatif</p>
+      <ul>
+        <li>Angles, hooks, CTA, tone of voice</li>
+        <li>Ce que les concurrents font et pas Hipto</li>
+        <li>Positionnement concurrentiel</li>
+      </ul>
+      <div class="source">Source : Hipto Radar — Internes + Concurrents</div>
+      <div style="margin-top:8px;"><span class="badge-asterisk">✅ 287 AdCopy Fibre analysés</span></div>
+    </div>
+    <div class="card db-evolve">
+      <div class="card-title"><span class="icon">💬</span> Commentaires</div>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:10px; font-style:italic;">Objectif : Extraire des reccos actionables</p>
+      <ul>
+        <li>Reccos angles créatifs</li>
+        <li>Reccos funnels</li>
+        <li>Pain points & langage client</li>
+      </ul>
+      <div class="source">Source : Pages FB Hipto + Concurrents</div>
+      <div style="margin-top:8px;"><span class="badge-asterisk">🔜 Phase 2</span></div>
+    </div>
+    <div class="card db-evolve">
+      <div class="card-title"><span class="icon">📊</span> Quality / Tableau *</div>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:12px;">Métriques de performance des campagnes</p>
+      <ul>
+        <li>CPL, marge, ROI par créa</li>
+        <li>Taux de conversion par angle</li>
+        <li>Scoring automatique (Winner, Scaling, Off)</li>
+      </ul>
+      <div class="source">Source : BigQuery → Tableau</div>
+      <div style="margin-top:8px;"><span class="badge-asterisk">* Manque : funnels, LP et leur contenu pour évaluer la perf end-to-end</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 32px; margin-top:20px;">
+    <h3 style="margin-bottom:12px;">🔗 D'où viennent les données ?</h3>
+    <table>
+      <thead><tr><th>Base</th><th>Source</th><th>Fréquence</th><th>Filtre</th></tr></thead>
+      <tbody>
+        <tr><td>Transcription visuels</td><td>Hipto Radar</td><td>Job tous les 10J ouvrables</td><td>Winners + Scaling</td></tr>
+        <tr><td>Analyse AdCopy</td><td>Hipto Radar</td><td>Job tous les 10J ouvrables</td><td>Winners + Scaling, Hipto + concurrents</td></tr>
+        <tr><td>Commentaires</td><td>Pages Facebook</td><td>Scraping périodique</td><td>Pages Hipto + concurrents</td></tr>
+        <tr><td>Quality / Tableau</td><td>BigQuery</td><td>Quotidien</td><td>Campagnes actives</td></tr>
+        <tr><td>Andromeda</td><td>PDF Meta</td><td>Mise à jour manuelle</td><td>—</td></tr>
+        <tr><td>Juridique</td><td>Équipe juridique</td><td>Mise à jour manuelle</td><td>Par vertical</td></tr>
+        <tr><td>Hipto Guidelines</td><td>Équipe créa</td><td>Mise à jour manuelle</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FLUX 1 ═══════════════════════ -->
+<section id="flux1" style="max-width:1200px;">
+  <div class="fade-in">
+    <h2>Flux ① <span class="tag">Bouton "Itérer"</span></h2>
+  </div>
+
+  <div class="fade-in" style="position:relative; width:100%; overflow-x:auto;">
+    <svg viewBox="0 0 960 1340" xmlns="http://www.w3.org/2000/svg" style="width:100%; min-width:700px; font-family:'Segoe UI',system-ui,sans-serif;">
+      <defs>
+        <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+        </marker>
+        <marker id="arrow-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#00d2a0"/>
+        </marker>
+        <pattern id="miro-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="12" cy="12" r="0.8" fill="rgba(148,163,184,0.12)"/>
+        </pattern>
+      </defs>
+
+      <rect width="960" height="1340" fill="#0f0f1a" rx="16"/>
+      <rect width="960" height="1340" fill="url(#miro-grid)" rx="16"/>
+
+      <!-- ── STEP 1: Sélection ── -->
+      <rect x="330" y="30" width="300" height="60" rx="12" fill="#1a1a2e" stroke="#00d2a0" stroke-width="2"/>
+      <text x="480" y="56" text-anchor="middle" fill="#e2e8f0" font-size="15" font-weight="700">① Sélection galerie</text>
+      <text x="480" y="76" text-anchor="middle" fill="#94a3b8" font-size="11">MB clique sur une pub winner / scaling</text>
+
+      <!-- Arrow 1 → fork -->
+      <line x1="480" y1="90" x2="480" y2="120" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <!-- Fork lines -->
+      <line x1="480" y1="120" x2="290" y2="120" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="480" y1="120" x2="670" y2="120" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="290" y1="120" x2="290" y2="140" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <line x1="670" y1="120" x2="670" y2="140" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 2a: Analyse Image ── -->
+      <rect x="170" y="145" width="240" height="56" rx="12" fill="#1a1a2e" stroke="#a855f7" stroke-width="2"/>
+      <text x="290" y="170" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">②a Analyse Image</text>
+      <text x="290" y="188" text-anchor="middle" fill="#a855f7" font-size="11">Wavespeed Vision</text>
+
+      <!-- ── STEP 2b: Analyse AdCopy ── -->
+      <rect x="550" y="145" width="240" height="56" rx="12" fill="#1a1a2e" stroke="#3b82f6" stroke-width="2"/>
+      <text x="670" y="170" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">②b Analyse AdCopy</text>
+      <text x="670" y="188" text-anchor="middle" fill="#3b82f6" font-size="11">GPT-4o-mini</text>
+
+      <!-- Merge lines -->
+      <line x1="290" y1="201" x2="290" y2="225" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="670" y1="201" x2="670" y2="225" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="290" y1="225" x2="670" y2="225" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="480" y1="225" x2="480" y2="248" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 3: Bases de connaissance ── -->
+      <rect x="155" y="253" width="650" height="90" rx="14" fill="rgba(26,26,46,0.9)" stroke="#334155" stroke-width="1.5"/>
+      <text x="480" y="275" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600">③ BASES DE CONNAISSANCE</text>
+
+      <!-- 4 mini-nodes inside -->
+      <rect x="180" y="288" width="130" height="44" rx="8" fill="rgba(0,210,160,0.08)" stroke="rgba(0,210,160,0.3)" stroke-width="1"/>
+      <text x="245" y="306" text-anchor="middle" fill="#00d2a0" font-size="16">📊</text>
+      <text x="245" y="323" text-anchor="middle" fill="#00d2a0" font-size="10" font-weight="600">VerticalSynthesis</text>
+
+      <rect x="325" y="288" width="130" height="44" rx="8" fill="rgba(59,130,246,0.08)" stroke="rgba(59,130,246,0.3)" stroke-width="1"/>
+      <text x="390" y="306" text-anchor="middle" fill="#3b82f6" font-size="16">📘</text>
+      <text x="390" y="323" text-anchor="middle" fill="#3b82f6" font-size="10" font-weight="600">Andromeda</text>
+
+      <rect x="470" y="288" width="130" height="44" rx="8" fill="rgba(233,69,96,0.08)" stroke="rgba(233,69,96,0.3)" stroke-width="1"/>
+      <text x="535" y="306" text-anchor="middle" fill="#e94560" font-size="16">⚖️</text>
+      <text x="535" y="323" text-anchor="middle" fill="#e94560" font-size="10" font-weight="600">Juridique</text>
+
+      <rect x="615" y="288" width="130" height="44" rx="8" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.3)" stroke-width="1"/>
+      <text x="680" y="306" text-anchor="middle" fill="#a855f7" font-size="16">🎨</text>
+      <text x="680" y="323" text-anchor="middle" fill="#a855f7" font-size="10" font-weight="600">Hipto Rules</text>
+
+      <!-- Arrow 3 → 4 -->
+      <line x1="480" y1="343" x2="480" y2="375" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 4: label ── -->
+      <text x="480" y="395" text-anchor="middle" fill="#f39c12" font-size="13" font-weight="700">④ L'IA génère 3 briefs créatifs</text>
+
+      <!-- Fork to 3 briefs -->
+      <line x1="480" y1="402" x2="480" y2="420" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="190" y1="420" x2="770" y2="420" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="190" y1="420" x2="190" y2="438" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <line x1="480" y1="420" x2="480" y2="438" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <line x1="770" y1="420" x2="770" y2="438" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- Brief 1: Stable -->
+      <rect x="100" y="443" width="180" height="100" rx="12" fill="rgba(0,210,160,0.06)" stroke="#00d2a0" stroke-width="2"/>
+      <text x="190" y="466" text-anchor="middle" fill="#00d2a0" font-size="11" font-weight="700">BRIEF 1</text>
+      <text x="190" y="486" text-anchor="middle" fill="#00d2a0" font-size="13" font-weight="700">🟢 STABLE</text>
+      <text x="190" y="505" text-anchor="middle" fill="#94a3b8" font-size="10">Angle · Hook · Headline</text>
+      <text x="190" y="518" text-anchor="middle" fill="#94a3b8" font-size="10">Body · CTA</text>
+      <text x="190" y="535" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">Fidèle à la source</text>
+
+      <!-- Brief 2: Équilibré -->
+      <rect x="390" y="443" width="180" height="100" rx="12" fill="rgba(59,130,246,0.06)" stroke="#3b82f6" stroke-width="2"/>
+      <text x="480" y="466" text-anchor="middle" fill="#3b82f6" font-size="11" font-weight="700">BRIEF 2</text>
+      <text x="480" y="486" text-anchor="middle" fill="#3b82f6" font-size="13" font-weight="700">🔵 ÉQUILIBRÉ</text>
+      <text x="480" y="505" text-anchor="middle" fill="#94a3b8" font-size="10">Angle · Hook · Headline</text>
+      <text x="480" y="518" text-anchor="middle" fill="#94a3b8" font-size="10">Body · CTA</text>
+      <text x="480" y="535" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">Variation contrôlée</text>
+
+      <!-- Brief 3: Disruptif -->
+      <rect x="680" y="443" width="180" height="100" rx="12" fill="rgba(233,69,96,0.06)" stroke="#e94560" stroke-width="2"/>
+      <text x="770" y="466" text-anchor="middle" fill="#e94560" font-size="11" font-weight="700">BRIEF 3</text>
+      <text x="770" y="486" text-anchor="middle" fill="#e94560" font-size="13" font-weight="700">🔴 DISRUPTIF</text>
+      <text x="770" y="505" text-anchor="middle" fill="#94a3b8" font-size="10">Angle · Hook · Headline</text>
+      <text x="770" y="518" text-anchor="middle" fill="#94a3b8" font-size="10">Body · CTA</text>
+      <text x="770" y="535" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">Rupture créative</text>
+
+      <!-- Merge briefs -->
+      <line x1="190" y1="543" x2="190" y2="570" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="480" y1="543" x2="480" y2="570" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="770" y1="543" x2="770" y2="570" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="190" y1="570" x2="770" y2="570" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="480" y1="570" x2="480" y2="595" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 5: Validation Scripts ── -->
+      <rect x="310" y="600" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#fbbf24" stroke-width="2"/>
+      <text x="480" y="625" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑤ Validation MB — Scripts</text>
+      <text x="480" y="644" text-anchor="middle" fill="#94a3b8" font-size="11">Sélectionne · modifie · valide</text>
+
+      <!-- Arrow 5 → 6 -->
+      <line x1="480" y1="656" x2="480" y2="690" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 6: Génération Images ── -->
+      <rect x="310" y="695" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#f39c12" stroke-width="2"/>
+      <text x="480" y="720" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑥ Génération Images</text>
+      <text x="480" y="739" text-anchor="middle" fill="#94a3b8" font-size="11">1 image par brief validé · publication-ready</text>
+
+      <!-- Arrow 6 → 7 -->
+      <line x1="480" y1="751" x2="480" y2="785" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 7: Validation Images ── -->
+      <rect x="310" y="790" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#e94560" stroke-width="2"/>
+      <text x="480" y="815" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑦ Validation MB — Images</text>
+      <text x="480" y="834" text-anchor="middle" fill="#94a3b8" font-size="11">✅ Validé  ·  ❌ Rejet + motif  ·  ⏰ Auto 48h</text>
+
+      <!-- Arrow 7 → outputs -->
+      <line x1="480" y1="846" x2="480" y2="875" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <!-- Fork to 3 outputs -->
+      <line x1="480" y1="875" x2="240" y2="875" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="480" y1="875" x2="720" y2="875" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="240" y1="875" x2="240" y2="895" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <line x1="480" y1="875" x2="480" y2="895" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <line x1="720" y1="875" x2="720" y2="895" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- Output nodes -->
+      <rect x="170" y="900" width="140" height="48" rx="10" fill="#1a1a2e" stroke="#334155" stroke-width="1.5"/>
+      <text x="240" y="922" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">💾 Stockage</text>
+      <text x="240" y="938" text-anchor="middle" fill="#94a3b8" font-size="10">GCP + DB + pHash</text>
+
+      <rect x="410" y="900" width="140" height="48" rx="10" fill="#1a1a2e" stroke="#334155" stroke-width="1.5"/>
+      <text x="480" y="922" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">📢 Slack</text>
+      <text x="480" y="938" text-anchor="middle" fill="#94a3b8" font-size="10">Notifications</text>
+
+      <rect x="650" y="900" width="140" height="48" rx="10" fill="#1a1a2e" stroke="#334155" stroke-width="1.5"/>
+      <text x="720" y="922" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">📈 Tracking</text>
+      <text x="720" y="938" text-anchor="middle" fill="#94a3b8" font-size="10">Biblio Studio</text>
+
+      <!-- ═══════════ FEEDBACK LOOP ═══════════ -->
+
+      <!-- Arrow outputs → step 8 -->
+      <line x1="480" y1="948" x2="480" y2="985" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 8: Publication Prod ── -->
+      <rect x="330" y="990" width="300" height="56" rx="12" fill="#1a1a2e" stroke="#00d2a0" stroke-width="2"/>
+      <text x="480" y="1015" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑧ Publication en prod</text>
+      <text x="480" y="1034" text-anchor="middle" fill="#94a3b8" font-size="11">MB lance les campagnes</text>
+
+      <!-- Arrow 8 → 9 -->
+      <line x1="480" y1="1046" x2="480" y2="1075" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 9: Performance ── -->
+      <rect x="330" y="1080" width="300" height="56" rx="12" fill="#1a1a2e" stroke="#3b82f6" stroke-width="2"/>
+      <text x="480" y="1105" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑨ Résultats performance</text>
+      <text x="480" y="1124" text-anchor="middle" fill="#94a3b8" font-size="11">BigQuery / Tableau → CPL, ROI, conversions</text>
+
+      <!-- Arrow 9 → 10 -->
+      <line x1="480" y1="1136" x2="480" y2="1165" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <!-- ── STEP 10: Auto-tagging ── -->
+      <rect x="310" y="1170" width="340" height="70" rx="12" fill="#1a1a2e" stroke="#f39c12" stroke-width="2"/>
+      <text x="480" y="1195" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑩ Auto-tagging</text>
+      <text x="480" y="1215" text-anchor="middle" fill="#00d2a0" font-size="11">✅ Winner → renforce les patterns</text>
+      <text x="480" y="1230" text-anchor="middle" fill="#e94560" font-size="11">❌ Off → évite les erreurs</text>
+
+      <!-- ═══════════ FEEDBACK ARROW (big curved loop back to step 3) ═══════════ -->
+      <!-- Line down from step 10 -->
+      <line x1="480" y1="1240" x2="480" y2="1270" stroke="#00d2a0" stroke-width="2"/>
+      <!-- Line right -->
+      <line x1="480" y1="1270" x2="900" y2="1270" stroke="#00d2a0" stroke-width="2"/>
+      <!-- Line up (right side, all the way to step 3 level) -->
+      <line x1="900" y1="1270" x2="900" y2="298" stroke="#00d2a0" stroke-width="2" stroke-dasharray="8,4"/>
+      <!-- Line left to step 3 -->
+      <line x1="900" y1="298" x2="810" y2="298" stroke="#00d2a0" stroke-width="2" marker-end="url(#arrow-loop)"/>
+
+      <!-- Label on the feedback arrow -->
+      <rect x="860" y="760" width="90" height="60" rx="8" fill="rgba(0,210,160,0.1)" stroke="rgba(0,210,160,0.3)" stroke-width="1"/>
+      <text x="905" y="782" text-anchor="middle" fill="#00d2a0" font-size="20">🔄</text>
+      <text x="905" y="800" text-anchor="middle" fill="#00d2a0" font-size="9" font-weight="700">FEEDBACK</text>
+      <text x="905" y="812" text-anchor="middle" fill="#00d2a0" font-size="9" font-weight="700">LOOP</text>
+
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FLUX 2 ═══════════════════════ -->
+<section id="flux2" style="max-width:1200px;">
+  <div class="fade-in">
+    <h2>Flux ② <span class="tag" style="background:var(--purple);">Upload libre</span></h2>
+  </div>
+
+  <div class="fade-in" style="position:relative; width:100%; overflow-x:auto;">
+    <svg viewBox="0 0 960 1340" xmlns="http://www.w3.org/2000/svg" style="width:100%; min-width:700px; font-family:'Segoe UI',system-ui,sans-serif;">
+      <defs>
+        <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+        </marker>
+        <marker id="arrow-loop2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#00d2a0"/>
+        </marker>
+        <pattern id="miro-grid2" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="12" cy="12" r="0.8" fill="rgba(148,163,184,0.12)"/>
+        </pattern>
+      </defs>
+
+      <rect width="960" height="1340" fill="#0f0f1a" rx="16"/>
+      <rect width="960" height="1340" fill="url(#miro-grid2)" rx="16"/>
+
+      <!-- ── STEP 1: Upload ── -->
+      <rect x="290" y="30" width="380" height="70" rx="12" fill="#1a1a2e" stroke="#a855f7" stroke-width="2"/>
+      <text x="480" y="56" text-anchor="middle" fill="#e2e8f0" font-size="15" font-weight="700">① Upload image + prompt libre</text>
+      <text x="480" y="76" text-anchor="middle" fill="#94a3b8" font-size="11">Image externe + vertical cible + instructions MB</text>
+
+      <!-- Arrow 1 → 2 -->
+      <line x1="480" y1="100" x2="480" y2="135" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 2: Analyse Image ── -->
+      <rect x="330" y="140" width="300" height="56" rx="12" fill="#1a1a2e" stroke="#a855f7" stroke-width="2"/>
+      <text x="480" y="165" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">② Analyse Image</text>
+      <text x="480" y="183" text-anchor="middle" fill="#a855f7" font-size="11">Wavespeed Vision</text>
+
+      <!-- Arrow 2 → 3 -->
+      <line x1="480" y1="196" x2="480" y2="235" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 3: Bases de connaissance ── -->
+      <rect x="155" y="240" width="650" height="90" rx="14" fill="rgba(26,26,46,0.9)" stroke="#334155" stroke-width="1.5"/>
+      <text x="480" y="262" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600">③ BASES DE CONNAISSANCE</text>
+
+      <rect x="180" y="275" width="130" height="44" rx="8" fill="rgba(0,210,160,0.08)" stroke="rgba(0,210,160,0.3)" stroke-width="1"/>
+      <text x="245" y="293" text-anchor="middle" fill="#00d2a0" font-size="16">📊</text>
+      <text x="245" y="310" text-anchor="middle" fill="#00d2a0" font-size="10" font-weight="600">VerticalSynthesis</text>
+
+      <rect x="325" y="275" width="130" height="44" rx="8" fill="rgba(59,130,246,0.08)" stroke="rgba(59,130,246,0.3)" stroke-width="1"/>
+      <text x="390" y="293" text-anchor="middle" fill="#3b82f6" font-size="16">📘</text>
+      <text x="390" y="310" text-anchor="middle" fill="#3b82f6" font-size="10" font-weight="600">Andromeda</text>
+
+      <rect x="470" y="275" width="130" height="44" rx="8" fill="rgba(233,69,96,0.08)" stroke="rgba(233,69,96,0.3)" stroke-width="1"/>
+      <text x="535" y="293" text-anchor="middle" fill="#e94560" font-size="16">⚖️</text>
+      <text x="535" y="310" text-anchor="middle" fill="#e94560" font-size="10" font-weight="600">Juridique</text>
+
+      <rect x="615" y="275" width="130" height="44" rx="8" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.3)" stroke-width="1"/>
+      <text x="680" y="293" text-anchor="middle" fill="#a855f7" font-size="16">🎨</text>
+      <text x="680" y="310" text-anchor="middle" fill="#a855f7" font-size="10" font-weight="600">Hipto Rules</text>
+
+      <!-- Arrow 3 → 4 -->
+      <line x1="480" y1="330" x2="480" y2="362" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 4: 3 briefs ── -->
+      <text x="480" y="382" text-anchor="middle" fill="#f39c12" font-size="13" font-weight="700">④ L'IA génère 3 briefs créatifs</text>
+
+      <!-- Fork to 3 briefs -->
+      <line x1="480" y1="390" x2="480" y2="408" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="190" y1="408" x2="770" y2="408" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="190" y1="408" x2="190" y2="425" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <line x1="480" y1="408" x2="480" y2="425" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <line x1="770" y1="408" x2="770" y2="425" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- Brief 1: Stable -->
+      <rect x="100" y="430" width="180" height="100" rx="12" fill="rgba(0,210,160,0.06)" stroke="#00d2a0" stroke-width="2"/>
+      <text x="190" y="453" text-anchor="middle" fill="#00d2a0" font-size="11" font-weight="700">BRIEF 1</text>
+      <text x="190" y="473" text-anchor="middle" fill="#00d2a0" font-size="13" font-weight="700">🟢 STABLE</text>
+      <text x="190" y="492" text-anchor="middle" fill="#94a3b8" font-size="10">Angle · Hook · Headline</text>
+      <text x="190" y="505" text-anchor="middle" fill="#94a3b8" font-size="10">Body · CTA</text>
+      <text x="190" y="522" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">Fidèle à la source</text>
+
+      <!-- Brief 2: Équilibré -->
+      <rect x="390" y="430" width="180" height="100" rx="12" fill="rgba(59,130,246,0.06)" stroke="#3b82f6" stroke-width="2"/>
+      <text x="480" y="453" text-anchor="middle" fill="#3b82f6" font-size="11" font-weight="700">BRIEF 2</text>
+      <text x="480" y="473" text-anchor="middle" fill="#3b82f6" font-size="13" font-weight="700">🔵 ÉQUILIBRÉ</text>
+      <text x="480" y="492" text-anchor="middle" fill="#94a3b8" font-size="10">Angle · Hook · Headline</text>
+      <text x="480" y="505" text-anchor="middle" fill="#94a3b8" font-size="10">Body · CTA</text>
+      <text x="480" y="522" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">Variation contrôlée</text>
+
+      <!-- Brief 3: Disruptif -->
+      <rect x="680" y="430" width="180" height="100" rx="12" fill="rgba(233,69,96,0.06)" stroke="#e94560" stroke-width="2"/>
+      <text x="770" y="453" text-anchor="middle" fill="#e94560" font-size="11" font-weight="700">BRIEF 3</text>
+      <text x="770" y="473" text-anchor="middle" fill="#e94560" font-size="13" font-weight="700">🔴 DISRUPTIF</text>
+      <text x="770" y="492" text-anchor="middle" fill="#94a3b8" font-size="10">Angle · Hook · Headline</text>
+      <text x="770" y="505" text-anchor="middle" fill="#94a3b8" font-size="10">Body · CTA</text>
+      <text x="770" y="522" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">Rupture créative</text>
+
+      <!-- Merge briefs -->
+      <line x1="190" y1="530" x2="190" y2="557" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="480" y1="530" x2="480" y2="557" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="770" y1="530" x2="770" y2="557" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="190" y1="557" x2="770" y2="557" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="480" y1="557" x2="480" y2="582" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 5: Validation Scripts ── -->
+      <rect x="310" y="587" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#fbbf24" stroke-width="2"/>
+      <text x="480" y="612" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑤ Validation MB — Scripts</text>
+      <text x="480" y="631" text-anchor="middle" fill="#94a3b8" font-size="11">Sélectionne · modifie · valide</text>
+
+      <!-- Arrow 5 → 6 -->
+      <line x1="480" y1="643" x2="480" y2="677" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 6: Génération Images ── -->
+      <rect x="310" y="682" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#f39c12" stroke-width="2"/>
+      <text x="480" y="707" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑥ Génération Images</text>
+      <text x="480" y="726" text-anchor="middle" fill="#94a3b8" font-size="11">1 image par brief validé · publication-ready</text>
+
+      <!-- Arrow 6 → 7 -->
+      <line x1="480" y1="738" x2="480" y2="772" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 7: Validation Images ── -->
+      <rect x="310" y="777" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#e94560" stroke-width="2"/>
+      <text x="480" y="802" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑦ Validation MB — Images</text>
+      <text x="480" y="821" text-anchor="middle" fill="#94a3b8" font-size="11">✅ Validé  ·  ❌ Rejet + motif  ·  ⏰ Auto 48h</text>
+
+      <!-- Arrow 7 → outputs -->
+      <line x1="480" y1="833" x2="480" y2="862" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <line x1="480" y1="862" x2="240" y2="862" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="480" y1="862" x2="720" y2="862" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="240" y1="862" x2="240" y2="882" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <line x1="480" y1="862" x2="480" y2="882" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <line x1="720" y1="862" x2="720" y2="882" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- Output nodes -->
+      <rect x="170" y="887" width="140" height="48" rx="10" fill="#1a1a2e" stroke="#334155" stroke-width="1.5"/>
+      <text x="240" y="909" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">💾 Stockage</text>
+      <text x="240" y="925" text-anchor="middle" fill="#94a3b8" font-size="10">GCP + DB + pHash</text>
+
+      <rect x="410" y="887" width="140" height="48" rx="10" fill="#1a1a2e" stroke="#334155" stroke-width="1.5"/>
+      <text x="480" y="909" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">📢 Slack</text>
+      <text x="480" y="925" text-anchor="middle" fill="#94a3b8" font-size="10">Notifications</text>
+
+      <rect x="650" y="887" width="140" height="48" rx="10" fill="#1a1a2e" stroke="#334155" stroke-width="1.5"/>
+      <text x="720" y="909" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">📈 Tracking</text>
+      <text x="720" y="925" text-anchor="middle" fill="#94a3b8" font-size="10">Biblio Studio</text>
+
+      <!-- ═══════════ FEEDBACK LOOP ═══════════ -->
+
+      <!-- Arrow outputs → step 8 -->
+      <line x1="480" y1="935" x2="480" y2="972" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 8: Publication Prod ── -->
+      <rect x="330" y="977" width="300" height="56" rx="12" fill="#1a1a2e" stroke="#00d2a0" stroke-width="2"/>
+      <text x="480" y="1002" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑧ Publication en prod</text>
+      <text x="480" y="1021" text-anchor="middle" fill="#94a3b8" font-size="11">MB lance les campagnes</text>
+
+      <!-- Arrow 8 → 9 -->
+      <line x1="480" y1="1033" x2="480" y2="1062" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 9: Performance ── -->
+      <rect x="330" y="1067" width="300" height="56" rx="12" fill="#1a1a2e" stroke="#3b82f6" stroke-width="2"/>
+      <text x="480" y="1092" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑨ Résultats performance</text>
+      <text x="480" y="1111" text-anchor="middle" fill="#94a3b8" font-size="11">BigQuery / Tableau → CPL, ROI, conversions</text>
+
+      <!-- Arrow 9 → 10 -->
+      <line x1="480" y1="1123" x2="480" y2="1152" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+      <!-- ── STEP 10: Auto-tagging ── -->
+      <rect x="310" y="1157" width="340" height="70" rx="12" fill="#1a1a2e" stroke="#f39c12" stroke-width="2"/>
+      <text x="480" y="1182" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑩ Auto-tagging</text>
+      <text x="480" y="1202" text-anchor="middle" fill="#00d2a0" font-size="11">✅ Winner → renforce les patterns</text>
+      <text x="480" y="1217" text-anchor="middle" fill="#e94560" font-size="11">❌ Off → évite les erreurs</text>
+
+      <!-- ═══════════ FEEDBACK ARROW ═══════════ -->
+      <line x1="480" y1="1227" x2="480" y2="1257" stroke="#00d2a0" stroke-width="2"/>
+      <line x1="480" y1="1257" x2="900" y2="1257" stroke="#00d2a0" stroke-width="2"/>
+      <line x1="900" y1="1257" x2="900" y2="285" stroke="#00d2a0" stroke-width="2" stroke-dasharray="8,4"/>
+      <line x1="900" y1="285" x2="810" y2="285" stroke="#00d2a0" stroke-width="2" marker-end="url(#arrow-loop2)"/>
+
+      <!-- Label on the feedback arrow -->
+      <rect x="860" y="747" width="90" height="60" rx="8" fill="rgba(0,210,160,0.1)" stroke="rgba(0,210,160,0.3)" stroke-width="1"/>
+      <text x="905" y="769" text-anchor="middle" fill="#00d2a0" font-size="20">🔄</text>
+      <text x="905" y="787" text-anchor="middle" fill="#00d2a0" font-size="9" font-weight="700">FEEDBACK</text>
+      <text x="905" y="799" text-anchor="middle" fill="#00d2a0" font-size="9" font-weight="700">LOOP</text>
+
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════ MODES ═══════════════════════ -->
+<section id="modes">
+  <div class="fade-in">
+    <h2>Modes de créativité</h2>
+    <p class="subtitle">L'IA propose automatiquement 3 scripts. Le MB sélectionne celui qu'il veut produire.</p>
+  </div>
+
+  <div class="grid-3 fade-in">
+    <div class="card mode-card mode-stable">
+      <div class="mode-label">🟢 Stable</div>
+      <h3>Fidèle à la source</h3>
+      <p>Reproduit la structure, les couleurs et la composition de l'original. Même angle marketing. Variations mineures.</p>
+      <div class="mode-example">
+        "Conserver le layout centré, fond blanc, produit seul, CTA en bas. Reproduire les patterns dominants du vertical."
+      </div>
+    </div>
+    <div class="card mode-card mode-balanced">
+      <div class="mode-label">🔵 Équilibré</div>
+      <h3>Variation contrôlée</h3>
+      <p>Garde le layout et la palette. Change un élément : angle, sujet, ou CTA. Apporte de la fraîcheur sans rupture.</p>
+      <div class="mode-example">
+        "Garder layout et palette. Changer l'angle d'économies vers preuve sociale. Ajouter un élément humain."
+      </div>
+    </div>
+    <div class="card mode-card mode-disruptive">
+      <div class="mode-label">🔴 Disruptif</div>
+      <h3>Rupture créative</h3>
+      <p>Casse le layout dominant. Composition asymétrique, couleur inattendue, sujet différent. Teste de nouvelles directions.</p>
+      <div class="mode-example">
+        "Casser le centré. Asymétrie, accent couleur #FF4500, sujet humain émotionnel au lieu du produit. CTA top-right."
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 32px;">
+    <h3 style="margin-bottom:16px;">Comment ça marche concrètement ?</h3>
+    <table>
+      <thead><tr><th>Élément</th><th>🟢 Stable</th><th>🔵 Équilibré</th><th>🔴 Disruptif</th></tr></thead>
+      <tbody>
+        <tr><td>Layout</td><td>Identique</td><td>Identique</td><td>Différent</td></tr>
+        <tr><td>Couleurs</td><td>Identiques</td><td>Palette conservée</td><td>Accent inattendu</td></tr>
+        <tr><td>Angle marketing</td><td>Même</td><td>1 changement</td><td>Nouveau</td></tr>
+        <tr><td>Sujet visuel</td><td>Même</td><td>Même + ajout</td><td>Différent</td></tr>
+        <tr><td>CTA</td><td>Même</td><td>Variante</td><td>Repositionné</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════ STACK ═══════════════════════ -->
+<section id="stack">
+  <div class="fade-in">
+    <h2>Stack technique</h2>
+    <p class="subtitle">Providers IA interchangeables, modèles switchables via configuration, zéro code à modifier.</p>
+  </div>
+
+  <h3 class="fade-in">Providers IA</h3>
+  <div class="fade-in">
+    <div class="tech-row">
+      <div class="tech-dot" style="background:var(--green);"></div>
+      <div class="tech-role">Analyse texte</div>
+      <div class="tech-name">OpenAI — GPT-4o-mini</div>
+      <div class="tech-detail">AdCopy, synthèse, copy generation</div>
+    </div>
+    <div class="tech-row">
+      <div class="tech-dot" style="background:var(--purple);"></div>
+      <div class="tech-role">Analyse vision</div>
+      <div class="tech-name">Wavespeed — Gemini 2.5 Flash</div>
+      <div class="tech-detail">Transcription images, switchable (GPT-4o, Claude, Llama...)</div>
+    </div>
+    <div class="tech-row">
+      <div class="tech-dot" style="background:var(--orange);"></div>
+      <div class="tech-role">Génération image</div>
+      <div class="tech-name">Google AI Studio — Gemini</div>
+      <div class="tech-detail">Switchable vers Wavespeed (Flux, SD...) via .env</div>
+    </div>
+    <div class="tech-row">
+      <div class="tech-dot" style="background:var(--muted);"></div>
+      <div class="tech-role">Vidéo (Phase 2)</div>
+      <div class="tech-name">Interface prête — Provider à venir</div>
+      <div class="tech-detail">Transcription vidéo uniquement pour commencer</div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <h3 class="fade-in">Tables pipeline (Prisma / PostgreSQL)</h3>
+  <div class="fade-in" style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 32px;">
+    <table>
+      <thead><tr><th>Table</th><th>Rôle</th><th>Clé unique</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CreativeAnalysis</strong></td><td>Transcription visuelle d'une image (1 par Media)</td><td>sourceMediaId</td></tr>
+        <tr><td><strong>AdCopyAnalysis</strong></td><td>Analyse textuelle d'un AdCopy (1 par AdCopy)</td><td>adCopyId</td></tr>
+        <tr><td><strong>WinnerCreativeUnit</strong></td><td>Jointure visuel + texte par winner (cohérence)</td><td>adId</td></tr>
+        <tr><td><strong>VerticalSynthesis</strong></td><td>Synthèse agrégée par vertical (job périodique)</td><td>verticalId</td></tr>
+        <tr><td><strong>GeneratedCreative</strong></td><td>Créa générée : image + copy + statut tracking</td><td>id</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sep"></div>
+
+  <h3 class="fade-in">Cycle de vie d'une créa générée</h3>
+  <div class="fade-in" style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+    <div style="padding:10px 20px; border-radius:10px; background:rgba(148,163,184,0.1); border:1px solid var(--border); font-size:14px;">DRAFT</div>
+    <div style="padding:10px 4px; color:var(--muted);">→</div>
+    <div style="padding:10px 20px; border-radius:10px; background:rgba(59,130,246,0.1); border:1px solid var(--blue); font-size:14px; color:var(--blue);">GENERATED</div>
+    <div style="padding:10px 4px; color:var(--muted);">→</div>
+    <div style="padding:10px 20px; border-radius:10px; background:rgba(0,210,160,0.1); border:1px solid var(--green); font-size:14px; color:var(--green);">VALIDATED</div>
+    <div style="padding:10px 4px; color:var(--muted);">→</div>
+    <div style="padding:10px 20px; border-radius:10px; background:rgba(168,85,247,0.1); border:1px solid var(--purple); font-size:14px; color:var(--purple);">IN_PROD</div>
+    <div style="padding:10px 4px; color:var(--muted);">→</div>
+    <div style="padding:10px 20px; border-radius:10px; background:rgba(251,191,36,0.1); border:1px solid var(--yellow); font-size:14px; color:var(--yellow);">WINNER</div>
+  </div>
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+    <div style="padding:10px 20px; border-radius:10px; background:rgba(233,69,96,0.1); border:1px solid var(--accent); font-size:14px; color:var(--accent);">REJECTED</div>
+    <div style="padding:10px 20px; border-radius:10px; background:rgba(148,163,184,0.05); border:1px solid var(--border); font-size:14px; color:var(--muted);">ABANDONED (auto 48h)</div>
+  </div>
+</section>
+
+<footer>
+  Creative Iteration Pipeline — Hipto AI Module — Mars 2026
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.05, rootMargin: '0px 0px 50px 0px' });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+setTimeout(() => {
+  document.querySelectorAll('.fade-in').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight) el.classList.add('visible');
+  });
+}, 100);
+
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', (e) => {
+    document.querySelectorAll('nav a').forEach(l => l.classList.remove('active'));
+    a.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
