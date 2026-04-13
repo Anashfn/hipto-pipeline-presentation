@@ -244,18 +244,29 @@
 
   <div class="fade-in" style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 32px; margin-top:20px;">
     <h3 style="margin-bottom:12px;">🔗 D'où viennent les données ?</h3>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">Les <strong>7 bases</strong> ci-dessous : pour chacune, le <strong>format de données</strong> tel qu’il est exploité dans le pipeline (stockage, échange LLM). Les règles fixes sont injectées en <strong>texte</strong> dans les prompts et/ou via la logique applicative (services) — <strong>pas de base vectorielle / retrieval</strong> sur ces contenus.</p>
     <table>
-      <thead><tr><th>Base</th><th>Source</th><th>Fréquence</th><th>Filtre</th></tr></thead>
+      <thead><tr><th>Base</th><th>Source</th><th>Format des données</th><th>Fréquence</th><th>Filtre</th></tr></thead>
       <tbody>
-        <tr><td>Transcription visuels</td><td>Hipto Radar</td><td>Job tous les 10J ouvrables</td><td>Winners + Scaling</td></tr>
-        <tr><td>Analyse AdCopy</td><td>Hipto Radar</td><td>Job tous les 10J ouvrables</td><td>Winners + Scaling, Hipto + concurrents</td></tr>
-        <tr><td>Commentaires</td><td>Pages Facebook</td><td>Scraping périodique</td><td>Pages Hipto + concurrents</td></tr>
-        <tr><td>Quality / Tableau</td><td>BigQuery</td><td>Quotidien</td><td>Campagnes actives</td></tr>
-        <tr><td>Andromeda</td><td>PDF Meta</td><td>Mise à jour manuelle</td><td>—</td></tr>
-        <tr><td>Juridique</td><td>Équipe juridique</td><td>Mise à jour manuelle</td><td>Par vertical</td></tr>
-        <tr><td>Hipto Guidelines</td><td>Équipe créa</td><td>Mise à jour manuelle</td><td>—</td></tr>
+        <tr><td>Transcription visuels</td><td>Hipto Radar</td><td><strong>JSON</strong> (réponse LLM + <code>analysisJson</code> Prisma, champs typés) + <strong>image</strong> (URL / média)</td><td>Job tous les 10J ouvrables</td><td>Winners + Scaling</td></tr>
+        <tr><td>Analyse AdCopy</td><td>Hipto Radar</td><td><strong>JSON</strong> (analyse structurée en base, champs + blob JSON)</td><td>Job tous les 10J ouvrables</td><td>Winners + Scaling, Hipto + concurrents</td></tr>
+        <tr><td>Commentaires</td><td>Pages Facebook</td><td><strong>Texte</strong> et/ou <strong>JSON</strong> (lignes scrapées selon le job)</td><td>Scraping périodique</td><td>Pages Hipto + concurrents</td></tr>
+        <tr><td>Quality / Tableau</td><td>BigQuery</td><td><strong>SQL</strong> / tables BigQuery + métriques agrégées ; Tableau = lecture (pas du XML métier)</td><td>Quotidien</td><td>Campagnes actives</td></tr>
+        <tr><td>Andromeda</td><td>PDF Meta</td><td><strong>PDF</strong> (référence) ; règles opérationnelles = <strong>texte</strong> / constantes applicatives (pas XML)</td><td>Mise à jour manuelle</td><td>—</td></tr>
+        <tr><td>Juridique</td><td>Équipe juridique</td><td><strong>Texte</strong> / <strong>Markdown</strong> (checklist, garde-fous) — injecté tel quel en contrôle aval</td><td>Mise à jour manuelle</td><td>Par vertical</td></tr>
+        <tr><td>Hipto Guidelines</td><td>Équipe créa</td><td><strong>Markdown</strong> ou doc interne (Notion export, etc.) — pas de schéma XML imposé</td><td>Mise à jour manuelle</td><td>—</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="fade-in" style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.35); border-radius:14px; padding:20px 24px; margin-top:24px;">
+    <h3 style="margin-bottom:10px; font-size:16px;">Résumé « format » pour un interlocuteur cloud / API</h3>
+    <ul style="color:var(--muted); font-size:14px; line-height:1.7; padding-left:20px;">
+      <li><strong>Données structurées marché / analyses</strong> : surtout <strong>JSON</strong> (PostgreSQL + champs JSON), adapté aux LLM (sortie parsée, pas besoin de XML).</li>
+      <li><strong>Règles métier</strong> : <strong>texte</strong> ou <strong>Markdown</strong> ; pas de catalogue XML dans ce pipeline.</li>
+      <li><strong>Performance</strong> : <strong>SQL</strong> (BigQuery) — format tabulaire, jointures, pas Markdown.</li>
+      <li><strong>Pas de retrieval sur corpus externe</strong> : enchaînement = données structurées + prompts + validation humaine.</li>
+    </ul>
   </div>
 </section>
 
