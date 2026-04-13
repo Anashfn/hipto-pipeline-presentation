@@ -126,6 +126,7 @@
   <div class="logo">HIPTO AI</div>
   <a href="#hero">Accueil</a>
   <a href="#databases">Bases de données</a>
+  <a href="#storage">Stockage</a>
   <a href="#flux1">Flux ① Bouton</a>
   <a href="#flux2">Flux ② Upload</a>
   <a href="#modes">Modes créativité</a>
@@ -152,6 +153,30 @@
     <h2>Architecture des données</h2>
     <p class="subtitle">Séparation claire entre les bases qui ne changent pas (règles métier) et celles qui évoluent avec le marché.</p>
     <p style="color:var(--muted); font-size:14px; max-width:900px; line-height:1.65; margin-bottom:8px;"><strong style="color:var(--text)">Lecture des cartes ci-dessous :</strong> <strong>Source</strong> = fichier, équipe ou système d’origine. <strong>Format entrée</strong> = comment la donnée existe (PDF, JSON, SQL…). <strong>Sortie / effet pipeline</strong> = ce que le produit en fait : pas toujours un « fichier export » — souvent du <strong>contexte injecté dans les prompts</strong>, du <strong>JSON stocké en base</strong>, ou une <strong>validation</strong> sur la créa générée.</p>
+  </div>
+
+  <div id="storage" class="fade-in" style="background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.35); border-radius:14px; padding:24px 28px; margin-bottom:36px;">
+    <h3 style="margin-bottom:12px; font-size:20px;">🗄️ Stockage des données — où et sous quelle forme</h3>
+    <p style="color:var(--muted); font-size:14px; margin-bottom:16px; line-height:1.6;">Le module <strong>HIPTO AI</strong> (backend) persiste l’essentiel dans <strong>PostgreSQL</strong> via <strong>Prisma</strong> (<code>DATABASE_URL</code>). Les images ne sont <strong>pas</strong> stockées en binaire dans Postgres : on garde une <strong>URL</strong> vers le fichier objet (ex. GCP). Les réponses LLM « riches » sont en <strong>JSONB</strong> (<code>Json</code> Prisma) en plus de colonnes typées (<code>String</code>, <code>Text</code>, <code>String[]</code>, etc.).</p>
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Ce qu’on stocke</th><th>Table / lieu</th><th>Forme technique</th></tr></thead>
+      <tbody>
+        <tr><td>Image de la pub (fichier)</td><td><code>Media</code></td><td><strong>URL</strong> unique <code>gcpUrl</code> + <code>pHash</code> (hash perceptuel) — le pixel est dans le <strong>stockage objet</strong>, pas dans la ligne SQL</td></tr>
+        <tr><td>Analyse visuelle (Vision)</td><td><code>CreativeAnalysis</code></td><td>Colonnes SQL (layout, couleurs, <code>designerPrompt</code> en <code>Text</code>, etc.) + <strong><code>analysisJson</code> JSONB</strong> pour le reste / évolutions schéma</td></tr>
+        <tr><td>Texte brut de l’annonce</td><td><code>AdCopy</code></td><td>Champs texte (<code>body</code>, <code>headline</code>…) — pas JSON pour le brut</td></tr>
+        <tr><td>Analyse AdCopy (LLM)</td><td><code>AdCopyAnalysis</code></td><td>Colonnes + <strong><code>analysisJson</code> JSONB</strong></td></tr>
+        <tr><td>Lien visuel + texte pour un winner</td><td><code>WinnerCreativeUnit</code></td><td>Clés étrangères vers <code>CreativeAnalysis</code> + <code>AdCopyAnalysis</code> + champs dérivés</td></tr>
+        <tr><td>Synthèse par vertical (agrégat)</td><td><code>VerticalSynthesis</code></td><td><code>synthesisText</code> en <code>Text</code> + tableaux de strings (layouts, angles…) + métadonnées</td></tr>
+        <tr><td>Créa générée par le pipeline</td><td><code>GeneratedCreative</code></td><td>Lignes SQL + URLs média / références aux sources</td></tr>
+        <tr><td>Ads, statuts, reach…</td><td><code>Ad</code>, <code>AdSnapshot</code>, …</td><td>Relationnel classique + enums (<code>AdStatus</code>)</td></tr>
+        <tr><td>Rapports Tableau (pont perf)</td><td><code>TableauReport</code></td><td><code>htmlContent</code> <code>Text</code> + <strong><code>rawData</code> JSONB</strong> + métadonnées de requête</td></tr>
+        <tr><td>Métriques / entrepôt</td><td><strong>BigQuery</strong> (amont)</td><td>Tables analytiques — consommées côté BI / priorisation, <strong>hors</strong> schéma métier Prisma ci-dessus</td></tr>
+        <tr><td>Règles STABLE (Andromeda, juridique, guidelines)</td><td><strong>Pas une table SQL « règles »</strong></td><td><strong>Texte</strong> dans les prompts / <strong>code</strong> (constantes, services) / <strong>fichiers Markdown</strong> versionnés dans le repo — le PDF Andromeda n’est pas ingéré en base ligne par ligne</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="color:var(--muted); font-size:13px; margin-top:14px; line-height:1.55;">En résumé : <strong>données opérationnelles du pipeline</strong> = Postgres relationnel + champs <strong>JSONB</strong> là où le schéma LLM évolue ; <strong>médias</strong> = URL + object storage ; <strong>perf lourde</strong> = BigQuery ; <strong>règles métier figées</strong> = surtout hors-BDD ou texte applicatif, pas un entrepôt XML.</p>
   </div>
 
   <h3 class="fade-in"><span class="db-badge badge-stable">STABLE</span> &nbsp; Bases de règles fixes</h3>
