@@ -364,18 +364,20 @@
       <line x1="670" y1="120" x2="670" y2="140" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
 
       <!-- ── STEP 2a: Analyse Image ── -->
-      <rect x="170" y="145" width="240" height="56" rx="12" fill="#1a1a2e" stroke="#a855f7" stroke-width="2"/>
-      <text x="290" y="170" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">②a Analyse Image</text>
-      <text x="290" y="188" text-anchor="middle" fill="#a855f7" font-size="11">Wavespeed Vision</text>
+      <rect x="170" y="145" width="240" height="62" rx="12" fill="#1a1a2e" stroke="#a855f7" stroke-width="2"/>
+      <text x="290" y="168" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">②a Analyse Image</text>
+      <text x="290" y="184" text-anchor="middle" fill="#4285f4" font-size="10" font-weight="600">Google Gemini 3 — API vision</text>
+      <text x="290" y="198" text-anchor="middle" fill="#a855f7" font-size="9">(image → transcription JSON · CreativeAnalysis)</text>
 
       <!-- ── STEP 2b: Analyse AdCopy ── -->
-      <rect x="550" y="145" width="240" height="56" rx="12" fill="#1a1a2e" stroke="#3b82f6" stroke-width="2"/>
+      <rect x="550" y="145" width="240" height="62" rx="12" fill="#1a1a2e" stroke="#3b82f6" stroke-width="2"/>
       <text x="670" y="170" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">②b Analyse AdCopy</text>
       <text x="670" y="188" text-anchor="middle" fill="#3b82f6" font-size="11">GPT-4o-mini</text>
+      <text x="670" y="198" text-anchor="middle" fill="#94a3b8" font-size="9">(texte → JSON · AdCopyAnalysis)</text>
 
       <!-- Merge lines -->
-      <line x1="290" y1="201" x2="290" y2="225" stroke="#64748b" stroke-width="1.5"/>
-      <line x1="670" y1="201" x2="670" y2="225" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="290" y1="207" x2="290" y2="225" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="670" y1="207" x2="670" y2="225" stroke="#64748b" stroke-width="1.5"/>
       <line x1="290" y1="225" x2="670" y2="225" stroke="#64748b" stroke-width="1.5"/>
       <line x1="480" y1="225" x2="480" y2="248" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
 
@@ -453,20 +455,21 @@
       <line x1="480" y1="656" x2="480" y2="690" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
 
       <!-- ── STEP 6: Génération Images ── -->
-      <rect x="310" y="695" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#f39c12" stroke-width="2"/>
-      <text x="480" y="720" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑥ Génération Images</text>
-      <text x="480" y="739" text-anchor="middle" fill="#94a3b8" font-size="11">1 image par brief validé · publication-ready</text>
+      <rect x="310" y="695" width="340" height="64" rx="12" fill="#1a1a2e" stroke="#f39c12" stroke-width="2"/>
+      <text x="480" y="716" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑥ Génération Images</text>
+      <text x="480" y="733" text-anchor="middle" fill="#4285f4" font-size="10" font-weight="600">Google Gemini 3 — API génération image</text>
+      <text x="480" y="748" text-anchor="middle" fill="#94a3b8" font-size="10">1 image par brief validé · publication-ready</text>
 
       <!-- Arrow 6 → 7 -->
-      <line x1="480" y1="751" x2="480" y2="785" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <line x1="480" y1="759" x2="480" y2="786" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
 
       <!-- ── STEP 7: Validation Images ── -->
-      <rect x="310" y="790" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#e94560" stroke-width="2"/>
-      <text x="480" y="815" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑦ Validation MB — Images</text>
-      <text x="480" y="834" text-anchor="middle" fill="#94a3b8" font-size="11">✅ Validé  ·  ❌ Rejet + motif  ·  ⏰ Auto 48h</text>
+      <rect x="310" y="791" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#e94560" stroke-width="2"/>
+      <text x="480" y="816" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑦ Validation MB — Images</text>
+      <text x="480" y="835" text-anchor="middle" fill="#94a3b8" font-size="11">✅ Validé  ·  ❌ Rejet + motif  ·  ⏰ Auto 48h</text>
 
       <!-- Arrow 7 → outputs -->
-      <line x1="480" y1="846" x2="480" y2="875" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <line x1="480" y1="847" x2="480" y2="875" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow1)"/>
       <!-- Fork to 3 outputs -->
       <line x1="480" y1="875" x2="240" y2="875" stroke="#64748b" stroke-width="1.5"/>
       <line x1="480" y1="875" x2="720" y2="875" stroke="#64748b" stroke-width="1.5"/>
@@ -566,12 +569,13 @@
       <line x1="480" y1="100" x2="480" y2="135" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
 
       <!-- ── STEP 2: Analyse Image ── -->
-      <rect x="330" y="140" width="300" height="56" rx="12" fill="#1a1a2e" stroke="#a855f7" stroke-width="2"/>
-      <text x="480" y="165" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">② Analyse Image</text>
-      <text x="480" y="183" text-anchor="middle" fill="#a855f7" font-size="11">Wavespeed Vision</text>
+      <rect x="330" y="140" width="300" height="62" rx="12" fill="#1a1a2e" stroke="#a855f7" stroke-width="2"/>
+      <text x="480" y="162" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">② Analyse Image</text>
+      <text x="480" y="178" text-anchor="middle" fill="#4285f4" font-size="10" font-weight="600">Google Gemini 3 — API vision</text>
+      <text x="480" y="192" text-anchor="middle" fill="#a855f7" font-size="9">(image → transcription JSON · CreativeAnalysis)</text>
 
       <!-- Arrow 2 → 3 -->
-      <line x1="480" y1="196" x2="480" y2="235" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <line x1="480" y1="202" x2="480" y2="238" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
 
       <!-- ── STEP 3: Bases de connaissance ── -->
       <rect x="155" y="240" width="650" height="90" rx="14" fill="rgba(26,26,46,0.9)" stroke="#334155" stroke-width="1.5"/>
@@ -646,20 +650,21 @@
       <line x1="480" y1="643" x2="480" y2="677" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
 
       <!-- ── STEP 6: Génération Images ── -->
-      <rect x="310" y="682" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#f39c12" stroke-width="2"/>
-      <text x="480" y="707" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑥ Génération Images</text>
-      <text x="480" y="726" text-anchor="middle" fill="#94a3b8" font-size="11">1 image par brief validé · publication-ready</text>
+      <rect x="310" y="682" width="340" height="64" rx="12" fill="#1a1a2e" stroke="#f39c12" stroke-width="2"/>
+      <text x="480" y="703" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑥ Génération Images</text>
+      <text x="480" y="720" text-anchor="middle" fill="#4285f4" font-size="10" font-weight="600">Google Gemini 3 — API génération image</text>
+      <text x="480" y="735" text-anchor="middle" fill="#94a3b8" font-size="10">1 image par brief validé · publication-ready</text>
 
       <!-- Arrow 6 → 7 -->
-      <line x1="480" y1="738" x2="480" y2="772" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <line x1="480" y1="746" x2="480" y2="773" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
 
       <!-- ── STEP 7: Validation Images ── -->
-      <rect x="310" y="777" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#e94560" stroke-width="2"/>
-      <text x="480" y="802" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑦ Validation MB — Images</text>
-      <text x="480" y="821" text-anchor="middle" fill="#94a3b8" font-size="11">✅ Validé  ·  ❌ Rejet + motif  ·  ⏰ Auto 48h</text>
+      <rect x="310" y="778" width="340" height="56" rx="12" fill="#1a1a2e" stroke="#e94560" stroke-width="2"/>
+      <text x="480" y="803" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">⑦ Validation MB — Images</text>
+      <text x="480" y="822" text-anchor="middle" fill="#94a3b8" font-size="11">✅ Validé  ·  ❌ Rejet + motif  ·  ⏰ Auto 48h</text>
 
       <!-- Arrow 7 → outputs -->
-      <line x1="480" y1="833" x2="480" y2="862" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <line x1="480" y1="834" x2="480" y2="862" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
       <line x1="480" y1="862" x2="240" y2="862" stroke="#64748b" stroke-width="1.5"/>
       <line x1="480" y1="862" x2="720" y2="862" stroke="#64748b" stroke-width="1.5"/>
       <line x1="240" y1="862" x2="240" y2="882" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow2)"/>
@@ -787,16 +792,16 @@
       <div class="tech-detail">AdCopy, synthèse, copy generation</div>
     </div>
     <div class="tech-row">
-      <div class="tech-dot" style="background:var(--purple);"></div>
+      <div class="tech-dot" style="background:#4285f4;"></div>
       <div class="tech-role">Analyse vision</div>
-      <div class="tech-name">Wavespeed — Gemini 2.5 Flash</div>
-      <div class="tech-detail">Transcription images, switchable (GPT-4o, Claude, Llama...)</div>
+      <div class="tech-name">Google Gemini 3 — API</div>
+      <div class="tech-detail">Image pub → transcription structurée (JSON CreativeAnalysis) · Generative Language ou Vertex selon <code>GOOGLE_*</code> / clé</div>
     </div>
     <div class="tech-row">
-      <div class="tech-dot" style="background:var(--orange);"></div>
+      <div class="tech-dot" style="background:#4285f4;"></div>
       <div class="tech-role">Génération image</div>
-      <div class="tech-name">Google AI Studio — Gemini</div>
-      <div class="tech-detail">Switchable vers Wavespeed (Flux, SD...) via .env</div>
+      <div class="tech-name">Google Gemini 3 — API (image)</div>
+      <div class="tech-detail">Modèle type <code>gemini-3.x-flash-image-preview</code> (<code>GOOGLE_IMAGE_MODEL</code>) · alternatif Vertex Imagen / autre provider via .env</div>
     </div>
     <div class="tech-row">
       <div class="tech-dot" style="background:var(--muted);"></div>
